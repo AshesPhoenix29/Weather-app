@@ -6,6 +6,32 @@ const input = document.getElementById('cityInput');
         const weatherInfo = document.getElementById('weatherInfo');
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
+        const weatherBg = document.querySelector('.weather-bg');
+
+        // Create stars
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            weatherBg.appendChild(star);
+        }
+
+        // Create rain effect
+        function createRain() {
+            const existingRain = document.querySelectorAll('.rain');
+            existingRain.forEach(drop => drop.remove());
+
+            for (let i = 0; i < 30; i++) {
+                const rain = document.createElement('div');
+                rain.className = 'rain';
+                rain.style.left = Math.random() * 100 + '%';
+                rain.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+                rain.style.animationDelay = Math.random() * 2 + 's';
+                weatherBg.appendChild(rain);
+            }
+        }
 
         async function getdata(cityName) {
             const response = await fetch(`http://api.weatherapi.com/v1/current.json?key=6b9c747b135f41b4b5e195122252812&q=${cityName}&aqi=yes`);
@@ -34,6 +60,12 @@ const input = document.getElementById('cityInput');
                 place.innerHTML = `${ans.location.name}, ${ans.location.country}`;
                 temp.innerHTML = `${ans.current.temp_c}`;
                 t.innerHTML = `${ans.location.localtime}`;
+                
+                // Add rain effect for rainy weather
+                const condition = ans.current.condition.text.toLowerCase();
+                if (condition.includes('rain') || condition.includes('drizzle') || condition.includes('shower')) {
+                    createRain();
+                }
                 
                 loading.classList.remove('show');
                 weatherInfo.classList.add('show');
